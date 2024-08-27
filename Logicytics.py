@@ -291,7 +291,9 @@ def Logicytics():
         dst_dir = r"..\ACCESS"
         shutil.copytree(src_dir, dst_dir, dirs_exist_ok=True)
         log.debug(f"Directory copied successfully from {src_dir} to {dst_dir}")
-        exit("Script has failed")
     except Exception as e:
         log.error(f"Error: {e}")
         exit("Script has failed")
+
+    # Return to parent directory
+    os.chdir(os.path.join(os.getcwd(), '..'))
