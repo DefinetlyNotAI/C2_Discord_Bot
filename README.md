@@ -10,7 +10,6 @@ This comprehensive guide is here to equip you with everything you need to use th
 
 <div align="center">
     <a href="https://github.com/DefinetlyNotAI/C2_Discord_Bot/issues"><img src="https://img.shields.io/github/issues/DefinetlyNotAI/C2_Discord_Bot" alt="GitHub Issues"></a>
-    <a href="https://github.com/DefinetlyNotAI/C2_Discord_Bot/tags"><img src="https://img.shields.io/github/v/tag/DefinetlyNotAI/C2_Discord_Bot" alt="GitHub Tag"></a>
     <a href="https://github.com/DefinetlyNotAI/C2_Discord_Bot/graphs/commit-activity"><img src="https://img.shields.io/github/commit-activity/t/DefinetlyNotAI/C2_Discord_Bot" alt="GitHub Commit Activity"></a>
     <a href="https://github.com/DefinetlyNotAI/C2_Discord_Bot/languages"><img src="https://img.shields.io/github/languages/count/DefinetlyNotAI/C2_Discord_Bot" alt="GitHub Language Count"></a>
     <a href="https://github.com/DefinetlyNotAI/C2_Discord_Bot/actions"><img src="https://img.shields.io/github/check-runs/DefinetlyNotAI/C2_Discord_Bot/main" alt="GitHub Branch Check Runs"></a>
