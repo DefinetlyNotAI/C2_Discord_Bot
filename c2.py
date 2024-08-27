@@ -1,232 +1,8 @@
 import json
 import os
-import colorlog
 import discord
 from discord.ext import commands
-from datetime import datetime
-
-
-# Log class
-
-class Log:
-    def __init__(
-            self,
-            filename="C2.log",
-            err_filename=None,
-            use_colorlog=True,
-            debug=False,
-            debug_color="cyan",
-            info_color="green",
-            warning_color="yellow",
-            error_color="red",
-            critical_color="red",
-            colorlog_fmt_parameters="%(log_color)s%(levelname)-8s%(reset)s %(blue)s%(message)s",
-    ):
-        """
-        Initializes a new instance of the LOG class.
-
-        The log class logs every interaction when called in both colorlog and in the log File
-
-        Best to only modify filename, and DEBUG.
-
-        Only if you are planning to use the dual-log parameter that allows you to both log unto the shell and the log
-        File: IMPORTANT: This class requires colorlog to be installed and also uses it in the INFO level, To use the
-        DEBUG level, set DEBUG to True.
-
-            If you are using colorlog, DO NOT INITIALIZE IT MANUALLY, USE THE LOG CLASS PARAMETER'S INSTEAD.
-            Sorry for any inconvenience that may arise.
-
-        Args: filename (str, optional): The name of the log File. Defaults to "Server.log". use_colorlog (bool,
-        optional): Whether to use colorlog. Defaults to True. debug (bool, optional): Whether to use the DEBUG level.
-        Defaults to False (which uses the INFO level). debug_color (str, optional): The color of the DEBUG level.
-        Defaults to "cyan". info_color (str, optional): The color of the info level. Defaults to "green".
-        warning_color (str, optional): The color of the warning level. Defaults to "yellow". error_color (str,
-        optional): The color of the error level. Defaults to "red". critical_color (str, optional): The color of the
-        critical level. Defaults to "red". colorlog_fmt_parameters (str, optional): The format of the log message.
-        Defaults to "%(log_color)s%(levelname)-8s%(reset)s %(blue)s%(message)s".
-
-        Returns:
-            None
-        """
-        self.level = debug
-        self.color = use_colorlog
-        if self.color:
-            # Configure colorlog for logging messages with colors
-            logger = colorlog.getLogger()
-            if debug:
-                logger.setLevel(
-                    colorlog.DEBUG
-                )  # Set the log level to DEBUG to capture all relevant logs
-            else:
-                logger.setLevel(
-                    colorlog.INFO
-                )  # Set the log level to INFO to capture all relevant logs
-            handler = colorlog.StreamHandler()
-            formatter = colorlog.ColoredFormatter(
-                colorlog_fmt_parameters,
-                datefmt=None,
-                reset=True,
-                log_colors={
-                    "DEBUG": debug_color,
-                    "INFO": info_color,
-                    "WARNING": warning_color,
-                    "ERROR": error_color,
-                    "CRITICAL": critical_color,
-                },
-            )
-            handler.setFormatter(formatter)
-            logger.addHandler(handler)
-
-        self.filename = str(filename)
-        if err_filename is None:
-            self.err_filename = self.filename
-        else:
-            self.err_filename = str(err_filename)
-        if not os.path.exists(self.filename):
-            self.__only("|" + "-" * 19 + "|" + "-" * 13 + "|" + "-" * 152 + "|")
-            self.__only(
-                "|     Timestamp     |  LOG Level  |"
-                + " " * 70
-                + "LOG Messages"
-                + " " * 70
-                + "|"
-            )
-            self.__only("|" + "-" * 19 + "|" + "-" * 13 + "|" + "-" * 152 + "|")
-
-    @staticmethod
-    def __timestamp() -> str:
-        """
-        Returns the current timestamp as a string in the format 'YYYY-MM-DD HH:MM:SS'.
-
-        Returns:
-            str: The current timestamp.
-        """
-        now = datetime.now()
-        time = f"{now.strftime('%Y-%m-%d %H:%M:%S')}"
-        return time
-
-    def __only(self, message):
-        """
-        Logs a quick message to the log File.
-
-        Args:
-            message: The message to be logged.
-
-        Returns:
-            None
-        """
-        with open(self.filename, "a") as f:
-            f.write(f"{str(message)}\n")
-
-    @staticmethod
-    def __pad_message(message):
-        """
-        Adds spaces to the end of a message until its length is exactly 153 characters.
-
-        Parameters:
-        - message (str): The input message string.
-
-        Returns:
-        - str: The padded message with a length of exactly 153 characters.
-        """
-        # Calculate the number of spaces needed
-        num_spaces = 151 - len(message)
-
-        if num_spaces > 0:
-            # If the message is shorter than 153 characters, add spaces to the end
-            padded_message = message + " " * num_spaces
-        else:
-            # If the message is already longer than 153 characters, truncate it to the first 148 characters
-            padded_message = message[:148]
-            padded_message += "..."
-
-        padded_message += "|"
-        return padded_message
-
-    def debug(self, message):
-        """
-        Logs an debug message via colorlog
-
-        Args:
-            message: The message to be logged.
-
-        Returns:
-            None
-        """
-        if self.level:
-            colorlog.debug(message)
-
-    def info(self, message):
-        """
-        Logs an informational message to the log File.
-
-        Args:
-            message: The message to be logged.
-
-        Returns:
-            None
-        """
-        if self.color:
-            colorlog.info(message)
-        with open(self.filename, "a") as f:
-            f.write(
-                f"[{self.__timestamp()}] > INFO:     | {self.__pad_message(str(message))}\n"
-            )
-
-    def warning(self, message):
-        """
-        Logs a warning message to the log File.
-
-        Args:
-            message: The warning message to be logged.
-
-        Returns:
-            None
-        """
-        if self.color:
-            colorlog.warning(message)
-        with open(self.filename, "a") as f:
-            f.write(
-                f"[{self.__timestamp()}] > WARNING:  | {self.__pad_message(str(message))}\n"
-            )
-
-    def error(self, message):
-        """
-        Logs an error message to the log File.
-
-        Args:
-            message: The error message to be logged.
-
-        Returns:
-            None
-        """
-        if self.color:
-            colorlog.error(message)
-        with open(self.err_filename, "a") as f:
-            f.write(
-                f"[{self.__timestamp()}] > ERROR:    | {self.__pad_message(str(message))}\n"
-            )
-
-    def critical(self, message):
-        """
-        Logs a critical message to the error log File.
-
-        Args:
-            message: The critical message to be logged.
-
-        Returns:
-            None
-        """
-        if self.color:
-            colorlog.critical(message)
-        with open(self.err_filename, "a") as f:
-            f.write(
-                f"[{self.__timestamp()}] > CRITICAL: | {self.__pad_message(str(message))}\n"
-            )
-
-
-# Configure colorlog for logging messages with colors
-log = Log()
+from Logicytics import log, Logicytics
 
 
 # Function to read secret keys and information from JSON file
@@ -251,14 +27,16 @@ def read_key():
         if (
                 config is not None
                 and isinstance(config["token"], str)
-                and isinstance(config["channel_id_(for_c2)"], int)
+                and isinstance(config["channel_id_(for_c2_commands)"], int)
+                and isinstance(config["channel_id_(for_c2_actions)"], int)
                 and isinstance(config["channel_id_(for_logs)"], int)
                 and isinstance(config["webhooks_username"], list)
                 and isinstance(config["log_using_debug?"], bool)
         ):
             return (
                 config["token"],
-                config["channel_id_(for_c2)"],
+                config["channel_id_(for_c2_commands)"],
+                config["channel_id_(for_c2_actions)"],
                 config["channel_id_(for_logs)"],
                 config["webhooks_username"],
                 config["log_using_debug?"],
@@ -272,7 +50,7 @@ def read_key():
 
 
 # All global variables, and required initializations are done here.
-TOKEN, CHANNEL_ID, CHANNEL_ID_LOGS, WEBHOOK_USERNAME, DEBUG = read_key()
+TOKEN, CHANNEL_ID_COMMANDS, CHANNEL_ID_LOGS, CHANNEL_ID_ACTIONS, WEBHOOK_USERNAME, DEBUG = read_key()
 
 MENU = """
 Reactions Menu:
@@ -285,6 +63,7 @@ Reactions Menu:
 📤 -> Upload a file of your choice (WIP)
 📥 -> Download a file of your choice (WIP)
 """
+
 
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
@@ -318,43 +97,47 @@ async def on_message(message):
     Returns:
         None
     """
-    channel_c2 = await message.guild.fetch_channel(CHANNEL_ID)
+    channel_c2 = await message.guild.fetch_channel(CHANNEL_ID_COMMANDS)
+    channel_actions = await message.guild.fetch_channel(CHANNEL_ID_ACTIONS)
     channel_log = await message.guild.fetch_channel(CHANNEL_ID_LOGS)
+    log.info(channel_actions.history(limit=1))
+    if not channel_actions.history(limit=1):
+        log.info(f"Starting C2")
+        await message.channel.send("React to this message to start the C2. More info should be sent to the other C2 channel, refrain from sending messages here.")
+
     if isinstance(channel_c2, discord.TextChannel) and isinstance(channel_log, discord.TextChannel):
         if message.author != bot.user:
+            # Check if the message author is not the bot
             log.info(f"Message from {message.author}: {message.content}")
+        if message.content == "/c2" and message.author != bot.user:
+            if message.author == message.guild.owner or message.author.guild_permissions.administrator:
+                await message.channel.send("/c2 logs -> Retrieves and sends the bots logs to a specified channel. \n/c2 menu -> Sends possible reaction menu")
+            else:
+                await message.channel.send("You do not have permission to use this command?")
+                log.error(f"User {message.author} attempted to use the /c2 command. Invalid permission's.")
         if message.content == "/c2 logs" and message.author != bot.user:
             if message.author == message.guild.owner or message.author.guild_permissions.administrator:
                 if message.channel.id == CHANNEL_ID_LOGS:
                     await logs(message.channel)
                 else:
-                    await message.channel.send("This is not the logs preconfigured channel. Please use the /logs command in the logs channel.")
+                    await message.channel.send("This is not the logs preconfigured channel. Please use the /logs "
+                                               "command in the logs channel.")
                     log.warning(f"Channel {message.channel} is not the one preconfigured.")
             else:
                 await message.channel.send("You do not have permission to use this command?")
                 log.error(f"User {message.author} attempted to use the /logs command. Invalid permission's.")
-        if str(message.author) in WEBHOOK_USERNAME and message.author != bot.user:
-            pass
-            # use reactions to decide what to do - include logicytics
-        if message.content == "/c2" and message.author != bot.user:
-            if message.author == message.guild.owner or message.author.guild_permissions.administrator:
-                await message.channel.send("/c2 logs -> Retrieves and sends the bots logs to a specified channel.")
-                await message.channel.send("/c2 menu -> Sends possible reaction menu")
-            else:
-                await message.channel.send("You do not have permission to use this command?")
-                log.error(f"User {message.author} attempted to use the /c2 command. Invalid permission's.")
         if message.content == "/c2 menu" and message.author != bot.user:
             if message.author == message.guild.owner or message.author.guild_permissions.administrator:
                 await message.channel.send(MENU)
             else:
                 await message.channel.send("You do not have permission to use this command?")
                 log.error(f"User {message.author} attempted to use the menu command. Invalid permission's.")
-        if str(message.author) not in WEBHOOK_USERNAME or message.author == bot.user:
+        if str(message.author) not in WEBHOOK_USERNAME:
+            # Check if the message author is not the bot
             log.info(f"Message Ignored due to {message.author} not being in the allowed list of users: {WEBHOOK_USERNAME}")
-
     else:
         log.critical(
-            f"Channel {CHANNEL_ID} or {CHANNEL_ID_LOGS} not found as text channels. Bot Crashed."
+            f"Channel {CHANNEL_ID_COMMANDS} or {CHANNEL_ID_LOGS} not found as text channels. Bot Crashed."
         )
         exit(1)
 
