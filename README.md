@@ -1,5 +1,6 @@
 # C2 Discord Bot 📎
 
+
 Welcome to C2 Bot 🌐,
 a cutting-edge tool
 designed to allow you to control device using a discord bot and a vulnerable target.
