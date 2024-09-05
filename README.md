@@ -14,6 +14,7 @@ This comprehensive guide is here to equip you with everything you need to use th
     <a href="https://github.com/DefinetlyNotAI/C2_Discord_Bot/languages"><img src="https://img.shields.io/github/languages/count/DefinetlyNotAI/C2_Discord_Bot" alt="GitHub Language Count"></a>
     <a href="https://github.com/DefinetlyNotAI/C2_Discord_Bot/actions"><img src="https://img.shields.io/github/check-runs/DefinetlyNotAI/C2_Discord_Bot/main" alt="GitHub Branch Check Runs"></a>
     <a href="https://github.com/DefinetlyNotAI/C2_Discord_Bot"><img src="https://img.shields.io/github/repo-size/DefinetlyNotAI/C2_Discord_Bot" alt="GitHub Repo Size"></a>
+    <a href="https://codeclimate.com/github/DefinetlyNotAI/C2_Discord_Bot/maintainability"><img src="https://api.codeclimate.com/v1/badges/cca8650d94930ae7382f/maintainability" /></a>
 </div>
 
 ## 📜 Introduction
