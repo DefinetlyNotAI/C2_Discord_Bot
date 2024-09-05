@@ -7,7 +7,7 @@ import zlib
 import dropbox
 import discord
 from discord.ext import commands
-from Logicytics import log  # WIP, Logicytics
+from Download_Logicytics import log  # WIP, Logicytics
 
 
 # Function to read secret keys and information from JSON file
